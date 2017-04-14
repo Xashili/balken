@@ -1,0 +1,107 @@
+<html>
+<head>
+<title>balken</title>
+<style>
+#whole {
+    display: block;
+    margin: auto;
+    width: 70px;
+    height: calc(100% - 6em);
+    padding: 0;
+    border: 3px solid black;
+}
+#tray {
+    display: block;
+    margin: auto;
+    height: 100%;
+    background-color: #20F220;
+}
+#box {
+    width: 70px;
+    height: 70px;
+    padding: 0;
+    top: -3px;
+    left: -3px;
+    border: 3px solid black;
+    position: relative;
+    background-color: #FFF;
+}
+#text {
+    text-align: center;
+    font-size: 2em;
+    line-height: 2em;
+    height: 2em;
+    font-weight: bold;
+    font-family: "Arial", Arial, sans-serif;
+    vertical-align: middle;
+}
+</style>
+<script>
+var minspeed = 20;
+var boxy = 0;
+var then;
+var speed;
+var box;
+var run;
+
+function push() {
+    if (run) {
+        var d = (boxy / 6) ** 1.3;
+        speed += d + (speed / 100);
+    } else {
+        run = true;
+        document.getElementById("text").style.visibility = "hidden";
+        speed = minspeed;
+        setTimeout(step, 33);
+    }
+    boxy = 0;
+    then = Date.now();
+    localStorage.setItem("state", then);
+    localStorage.setItem("speed", speed);
+}
+
+function drawBox() {
+    box.style.height = boxy + "%";
+}
+
+function step() {
+    drawBox();
+    var now = Date.now();
+    boxy += (now - then) / speed;
+    if (boxy > 100) {
+        boxy = 100;
+        run = false;
+        document.getElementById("text").style.visibility = "visible";
+        drawBox();
+    } else {
+        then = now;
+        setTimeout(step, 33);
+    }
+}
+
+function init() {
+    box = document.getElementById("box");
+
+    speed = parseInt(localStorage.getItem("speed"));
+    if (!speed) speed = minspeed;
+
+    then = parseInt(localStorage.getItem("state"));
+    if (!then) then = Date.now();
+
+    run = true;
+    step();
+}
+</script>
+</head>
+<body onload="init()" onclick="push()">
+
+<div id="whole">
+<div id="tray">
+    <div id="box">
+    </div>
+</div>
+</div>
+
+<div id="text" style="visibility: hidden;">try again</div>
+</body>
+</html>
